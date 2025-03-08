@@ -12,18 +12,18 @@ class TCPServer : public QTcpServer
 
 public:
     TCPServer();
+    ~TCPServer() = default;
     QTcpSocket *socket;                     /// Сокет, который создается для каждого нового подключения
 
 private:
     QVector<QTcpSocket*> socketsVector;     /// Сокеты, в которые будет проводиться рассылка
     QByteArray Data;                        /// Данные, которые будут передаваться между клиентом и сервером
     quint16 nextBlockSize = 0;              /// переменная для хранения размера блока
-    void sendToClient(QString message);
+    void sendToClient();
 
 public slots:
     void incomingConnection(qintptr socketDescriptor);  /// Слот для обработки подключений к серверу
     void socketDisconnection();
-    void slotReadyRead();                               /// Обработчик полученных сообщений
 };
 
 #endif // TCPSERVER_H

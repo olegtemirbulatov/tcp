@@ -1,16 +1,13 @@
 #ifndef TCPCLIENT_H
 #define TCPCLIENT_H
 
-#include <QMainWindow>
+#include <QWidget>
+#include <QVBoxLayout>
 #include <QTcpSocket>
+#include <QPushButton>
+#include <QTextBrowser>
 
-QT_BEGIN_NAMESPACE
-namespace Ui {
-class TCPClient;
-}
-QT_END_NAMESPACE
-
-class TCPClient : public QMainWindow
+class TCPClient : public QWidget
 {
     Q_OBJECT
 
@@ -22,15 +19,15 @@ public slots:
     void slotReadyRead();
 
 private:
-    Ui::TCPClient *ui;
+    QVBoxLayout *mainLayout;
+    QPushButton *connectButton;
+    QTextBrowser *textBrowser;
     QTcpSocket *socket;
     QByteArray Data;
-    quint16 nextBlockSize = 0;                      /// переменная для хранения размера блока
-    void sendToServer(QString message);
+    quint16 nextBlockSize = 0;      /// переменная для хранения размера блока
 
 private slots:
-    void on_pushButton_clicked();
-    void on_pushButton_2_clicked();
-    void on_lineEdit_returnPressed();
+    void on_connectButton_clicked();
 };
+
 #endif // TCPCLIENT_H

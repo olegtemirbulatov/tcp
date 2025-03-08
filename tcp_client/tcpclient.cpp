@@ -1,19 +1,29 @@
 #include "tcpclient.h"
-#include "ui_tcpclient.h"
 
 TCPClient::TCPClient(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::TCPClient)
+    : QWidget(parent)
 {
-    ui->setupUi(this);
+    mainLayout = new QVBoxLayout(this);
+    connectButton = new QPushButton("Connect to server");
+    textBrowser = new QTextBrowser();
+    connectButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    textBrowser->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    mainLayout->addWidget(connectButton);
+    mainLayout->addWidget(textBrowser);
+    setLayout(mainLayout);
+    resize(400, 500);
+
     socket = new QTcpSocket(this);
+    socket->open(QIODevice::ReadOnly);
+
+    connect(connectButton, &QPushButton::clicked, this, &TCPClient::on_connectButton_clicked);
     connect(socket, &QTcpSocket::readyRead, this, &TCPClient::slotReadyRead);
     connect(socket, &QTcpSocket::disconnected, socket, &QTcpSocket::deleteLater);
 }
 
 TCPClient::~TCPClient()
 {
-    delete ui;
+    socket->close();
 }
 
 void TCPClient::slotReadyRead()
@@ -26,7 +36,7 @@ void TCPClient::slotReadyRead()
         {
             if (nextBlockSize == 0)
             {
-                if (socket->bytesAvailable() < 2)           // почитать как работает
+                if (socket->bytesAvailable() < 2)
                 {
                     break;
                 }
@@ -40,42 +50,17 @@ void TCPClient::slotReadyRead()
             // если мы все еще не вышли из цикла
             QString message;
             input >> message;
-            nextBlockSize = 0;                              // обнуляем, чтобы можно было принимать новые сообщения
-            ui->textBrowser->append(message);
+            nextBlockSize = 0;      // обнуляем, чтобы можно было принимать новые сообщения
+            textBrowser->append(message);
         }
     }
     else
     {
-        ui->textBrowser->append("Error while reading socket");
+        textBrowser->append("Error while reading socket");
     }
 }
 
-void TCPClient::sendToServer(QString message)
+void TCPClient::on_connectButton_clicked()
 {
-    Data.clear();
-    QDataStream output(&Data, QIODevice::WriteOnly);        // почитать как работает
-    output.setVersion(QDataStream::Qt_5_15);                // изменить версию, если получится подгрузить qt6
-    output << quint16(0) << message;
-    output.device()->seek(0);                               // Переходим в самое начало блока
-    output << quint16(Data.size() - sizeof(quint16));       // записываем размер блока в первые 2 байта передаваемого сообщения
-    socket->write(Data);
-    ui->lineEdit->clear();
+    socket->connectToHost("127.0.0.1", 1234);
 }
-
-void TCPClient::on_pushButton_clicked()
-{
-    socket->connectToHost("127.0.0.1", 2323); // потом поменять адрес порта
-}
-
-
-void TCPClient::on_pushButton_2_clicked()
-{
-    sendToServer(ui->lineEdit->text());
-}
-
-
-void TCPClient::on_lineEdit_returnPressed()
-{
-    sendToServer(ui->lineEdit->text());
-}
-
