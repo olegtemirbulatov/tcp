@@ -29,7 +29,7 @@ TCPClient::~TCPClient()
 void TCPClient::slotReadyRead()
 {
     QDataStream input(socket);
-    input.setVersion(QDataStream::Qt_5_15); // потом поменять
+    input.setVersion(QDataStream::Qt_5_15);
     if (input.status() == QDataStream::Ok)
     {
         while (true)

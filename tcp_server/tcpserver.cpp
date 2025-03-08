@@ -19,7 +19,7 @@ void TCPServer::sendToClient()
 {
     Data.clear();
     QDataStream output(&Data, QIODevice::WriteOnly);
-    output.setVersion(QDataStream::Qt_5_15);                // изменить версию, если получится подгрузить qt6
+    output.setVersion(QDataStream::Qt_5_15);
     QString message = "Текущее число TCP-клиентов: " + QString::number(socketsVector.size());
     output << quint16(0) << message;                        // резервируем первые 2 байта под размер сообщения
     output.device()->seek(0);                               // Переходим в самое начало блока
