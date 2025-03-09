@@ -62,5 +62,5 @@ void TCPClient::slotReadyRead()
 
 void TCPClient::on_connectButton_clicked()
 {
-    socket->connectToHost("127.0.0.1", 1234);
+    socket->connectToHost("127.0.0.1", 8080);
 }

@@ -4,7 +4,7 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QObject>
-#include <QVector>
+#include <QList>
 
 class TCPServer : public QTcpServer
 {
@@ -12,13 +12,10 @@ class TCPServer : public QTcpServer
 
 public:
     TCPServer();
-    ~TCPServer() = default;
-    QTcpSocket *socket;                     /// Сокет, который создается для каждого нового подключения
 
 private:
-    QVector<QTcpSocket*> socketsVector;     /// Сокеты, в которые будет проводиться рассылка
-    QByteArray Data;                        /// Данные, которые будут передаваться между клиентом и сервером
-    quint16 nextBlockSize = 0;              /// переменная для хранения размера блока
+    QList<QTcpSocket*> connectedSockets;                /// Сокеты, в которые будет проводиться рассылка
+    QByteArray Data;                                    /// Данные, которые будут передаваться между клиентом и сервером
     void sendToClient();
 
 public slots:
